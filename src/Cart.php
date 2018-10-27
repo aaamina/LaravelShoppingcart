@@ -111,7 +111,7 @@ class Cart
         return $cartItem;
     }
     /**
-     * * Add an item to the cart.
+     * * subtract an item to the cart.
      * @param $id
      * @param null $name
      * @param null $qty
