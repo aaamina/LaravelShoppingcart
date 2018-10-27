@@ -110,6 +110,40 @@ class Cart
 
         return $cartItem;
     }
+    /**
+     * * Add an item to the cart.
+     * @param $id
+     * @param null $name
+     * @param null $qty
+     * @param null $price
+     * @param array $options
+     * @return \Gloudemans\Shoppingcart\CartItem
+     */
+    public function subtract($id, $name = null, $qty = null, $price = null, array $options = [])
+    {
+        if ($this->isMulti($id)) {
+            return array_map(function ($item) {
+                return $this->add($item);
+            }, $id);
+        }
+
+        $cartItem = $this->createCartItem($id, $name, $qty, $price, $options);
+
+        $content = $this->getContent();
+
+        if ($content->has($cartItem->rowId)) {
+            //dd($cartItem->qty,$content->get($cartItem->rowId)->qty);
+            $cartItem->qty = $content->get($cartItem->rowId)->qty - $cartItem->qty;
+        }
+
+        $content->put($cartItem->rowId, $cartItem);
+
+        $this->events->fire('cart.subtract', $cartItem);
+
+        $this->session->put($this->instance, $content);
+
+        return $cartItem;
+    }
 
     /**
      * Update the cart item with the given rowId.
